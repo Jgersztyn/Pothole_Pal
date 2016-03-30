@@ -2,9 +2,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.jgersztyn.pothole_pal.FirstAcivity">
-    <item
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/map_id"
+            android:title="Map"
+            android:icon="@drawable/ic_notifications_black_24dp"
+            ></item>
+
+        <item
+            android:id="@+id/settings_id"
+            android:title="Settings"
+            android:icon="@drawable/ic_sync_black_24dp"
+            ></item>
+
+<!--        <item
+            android:id="@+id/settings_id"
+            android:title="Settings"
+            android:icon="@drawable/ic_sync_black_24dp"
+            ></item>-->
+    </group>
+
+
+
+<!--    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
+
 </menu>
