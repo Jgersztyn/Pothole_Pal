@@ -64,7 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //we do not update anything if the last update was less than 2 seconds ago
             if (Math.abs(currentTime - lastUpdate) > 2000) {
 
-                SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy");
+                SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
                 String currentDateTime = date.format(new Date());
                 lastUpdate = currentTime;
 
@@ -76,12 +76,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }*/
 
                 //listen for movement along the y-axis
+                //the logic statement dictates the amount of movement which needs to occur for a response
                 if (Math.abs(last_y - y) > 10) {
                     //add a marker at the specified coordinates
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(44.842354, -123.2354))
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                            .title("The y axis moved..." + currentDateTime));
+                            .title("The y axis moved on... " + currentDateTime));
                 }
 
                 /*if (Math.abs(last_z - z) > 10) {

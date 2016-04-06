@@ -60,6 +60,16 @@ public class FirstAcivity extends AppCompatActivity {
             }
         });
 
+        //button to get to login page
+        Button toLoginBut = (Button) findViewById(R.id.loginButton);
+        toLoginBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FirstAcivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
 //        //I am unsure if there is any way we can get this to work
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
