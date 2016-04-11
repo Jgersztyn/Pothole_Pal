@@ -7,20 +7,21 @@
         <item
             android:id="@+id/map_id"
             android:title="Map"
-            android:icon="@drawable/ic_notifications_black_24dp"
+            android:icon="@drawable/ic_map_name"
             ></item>
 
         <item
             android:id="@+id/settings_id"
             android:title="Settings"
-            android:icon="@drawable/ic_sync_black_24dp"
+            android:icon="@drawable/ic_settings"
             ></item>
 
-<!--        <item
-            android:id="@+id/settings_id"
-            android:title="Settings"
-            android:icon="@drawable/ic_sync_black_24dp"
-            ></item>-->
+        <item
+            android:id="@+id/login_id"
+            android:title="Login"
+            android:icon="@drawable/ic_login">
+            <!--app:showAsAction="never"-->
+            </item>
     </group>
 
 
@@ -29,6 +30,6 @@
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" />-->
+         />-->
 
 </menu>

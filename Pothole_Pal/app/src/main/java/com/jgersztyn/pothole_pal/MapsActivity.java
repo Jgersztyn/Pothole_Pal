@@ -137,9 +137,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(44.8528, -123.2394);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Western Oregon University"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        // Location a marker will be added
+        LatLng monmouthOR = new LatLng(44.8528, -123.2394);
+        // Add a marker in Monmouth
+        mMap.addMarker(new MarkerOptions().position(monmouthOR).title("Western Oregon University"));
+        // Zoom to this point on the map
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.8528, -123.2394), 14.9f));
     }
 }
