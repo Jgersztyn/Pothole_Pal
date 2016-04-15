@@ -52,16 +52,23 @@
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"/>
-        <activity android:name=".LoginActivity" android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SignupActivity" android:theme="@style/AppTheme.NoActionBar" />
-<!--        <activity
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SignupActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!--
+            <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"></activity>
         <activity
             android:name=".SignupActivity"
             android:label="@string/title_activity_signup"
-            android:theme="@style/AppTheme"></activity>-->
+            android:theme="@style/AppTheme"></activity>
+        -->
+        <activity android:name=".MySQLiteHelper"></activity>
     </application>
 
 </manifest>

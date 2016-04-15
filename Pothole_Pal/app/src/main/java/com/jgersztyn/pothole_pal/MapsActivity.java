@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener {
 
@@ -30,6 +32,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SensorEventListener listen;
 
     private long lastUpdate = 0;
+
+    //context required to interact with the db
+    Context context = this;
+    //data source for adding points into our db
+    PinPointDataSrc data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     /*
@@ -141,7 +149,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng monmouthOR = new LatLng(44.8528, -123.2394);
         // Add a marker in Monmouth
         mMap.addMarker(new MarkerOptions().position(monmouthOR).title("Western Oregon University"));
+
+        /**************DATABASE ACCESS**************/
+        /*******************************************/
+
+        //provide access to the database here
+        data = new PinPointDataSrc(context);
+        try {
+            //open access to the data source
+            data.open();
+        }
+        catch(Exception er) {
+            Log.i("oops", "This is an error with the database");
+        }
+
+        //a list containing every point inside of the database
+        List<PinPointObj> points =  data.getAllPoints();
+        for(int i = 0; i < points.size(); i++) {
+            //get the position of this particular point on the map
+            String position = points.get(i).getPosition();
+
+            //perform all formatting requirements here
+            position = position.replace(",", "");
+            String[] latLngVal = position.split(" ");
+            double latitude = Double.parseDouble(latLngVal[0]);
+            double longitude = Double.parseDouble(latLngVal[1]);
+
+            //store the lat and long in an object which is understood
+            LatLng location = new LatLng(latitude, longitude);
+
+            //add this point onto the map
+            mMap.addMarker(new MarkerOptions()
+                            .title(points.get(i).getText())
+                            //icon is not part of the database, but it should be when ranking by severity
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                            .position(location)
+            );
+        }
+
+        //marker to add
+        data.addMarker(new PinPointObj("this point is near my house", "44.864763, -123.014778"));
+        //data.addMarker(new PinPointObj("I will add this in class!", "44.564763, -122.814778"));
+
+
+        //data.addMarker(new PinPointObj("YESSSSS", "43.864763, -122.014778"));
+
+        //close the data source
+        data.close();
+
+        /************END DATABASE ACCESS************/
+        /*******************************************/
+
         // Zoom to this point on the map
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.8528, -123.2394), 14.9f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.8608, -123.1394), 8.9f));
     }
 }
