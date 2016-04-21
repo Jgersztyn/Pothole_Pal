@@ -82,6 +82,14 @@ public class PinPointDataSrc {
     }
 
     /*
+    Deletes a specified marker on the map.
+    Therefore, the point should be deleted from the database.
+     */
+    public void deleteMarker(PinPointObj point) {
+        db.delete(MySQLiteHelper.TABLE_NAME, MySQLiteHelper.POSITION + " = '" + point.getPosition() + "'", null);
+    }
+
+    /*
     Gets the information from a specified cursor and converts it into a point
     The point is then in a format that can be stored inside of the database
     @param cursor the cursor being passed in and converted into a point
