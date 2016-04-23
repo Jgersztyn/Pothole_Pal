@@ -142,11 +142,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //listen for movement along the y-axis
                 //the logic statement dictates the amount of movement which needs to occur for a response
                 if (Math.abs(last_y - y) > 10) {
+
                     //add a marker at the specified coordinates
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(44.842354, -123.2354))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                            .title("The y axis moved on... " + currentDateTime));
+                    //marker is null to start
+                    Location location = null;
+
+                    //register the last known location of this device
+                    try {
+                        location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    } catch (SecurityException e) {
+                        Log.i(TAG, "Not able to get location");
+                    }
+
+                    //not a valid location
+                    if (location == null) {
+
+                        //there has to be something better than this damn try/catch blocks
+                        try {
+                            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+                        } catch (SecurityException e) {
+                            //should we do more here?
+                            Log.i(TAG, "Better than nothing");
+                        }
+                    } else {
+                        handleNewLocation(location);
+                    }
+
+//                    mMap.addMarker(new MarkerOptions()
+//                            .position(new LatLng(44.842354, -123.2354))
+//                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+//                            .title("The y axis moved on... " + currentDateTime));
                 }
 
                 /*if (Math.abs(last_z - z) > 10) {
@@ -155,11 +180,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                             .title("The z axis moved..." + currentDateTime));
                 }*/
-
-                //
-                //
-                //
-                //goToCurrentLocation();
 
                 last_x = x;
                 last_y = y;
@@ -183,7 +203,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
 
-        //setUpMapIfNeeded();
         //connect to the client as needed
         mGoogleApiClient.connect();
 
@@ -219,25 +238,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //register the last known location of this device
         try {
             location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        }
-        catch(SecurityException e) {
+        } catch (SecurityException e) {
             Log.i(TAG, "Not able to get location");
         }
 
         //not a valid location
-        if(location == null) {
+        if (location == null) {
 
             //there has to be something better than this damn try/catch blocks
             try {
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            }
-            catch(SecurityException e) {
+            } catch (SecurityException e) {
                 //should we do more here?
                 Log.i(TAG, "Better than nothing");
             }
-        }
-        else {
-            handleNewLocation(location);
+        } else {
+            //handleNewLocation(location);
         }
     }
 
@@ -290,122 +306,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(options);
         //move to that location on the map
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
+        //this moves to the current point on the map... uncomment this during a sprint!
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
     }
-
-//    @Override
-//    public void onLocationChanged(Location location) {
-//        // Determine whether new location is better than current best
-//        // estimate
-//        if (null == bestLocation || location.getAccuracy() < bestLocation.getAccuracy()) {
-//            bestLocation = location;
-//
-//            LatLng latAndLng = new LatLng(location.getLatitude(), location.getLatitude());
-//            CameraUpdate updateCam = CameraUpdateFactory.newLatLngZoom(latAndLng, 4.1f);
-//            mMap.animateCamera(updateCam);
-//
-//            if (bestLocation.getAccuracy() < MIN_ACCURACY) {
-//                LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-//            }
-//        }
-//    }
-
-//    @Override
-//    public void onConnected(Bundle connectionHint) {
-//        if(servicesAvailable()) {
-//            //get the best last location measurement meeting the criteria
-//            bestLocation =  bestLastKnownLocation(MIN_LAST_READ_ACCURACY, FIVE_MIN);
-//            if(null == bestLocation
-//                    || bestLocation.getAccuracy() > MIN_LAST_READ_ACCURACY
-//                    || bestLocation.getTime() < System.currentTimeMillis() - TWO_MIN) {
-//                try {
-//                    LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);
-//                }
-//                catch(SecurityException e) {
-//                    System.out.println("No location accessible");
-//                }
-//
-//                //schedules a runnable item to unregister the location listener
-//                Executors.newScheduledThreadPool(1).schedule(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, MapsActivity.this);
-//                    }
-//                }, ONE_MIN, TimeUnit.MILLISECONDS);
-//            }
-//        }
-
-        //is this working??
-//        Toast.makeText(this, "Here we are", Toast.LENGTH_SHORT).show();
-//
-//        try {
-//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-//                    googleApiClient);
-//            if (mLastLocation != null) {
-//
-//                LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, this);
-//
-//                mLatitudeText = (String.valueOf(mLastLocation.getLatitude()));
-//                mLongitudeText = (String.valueOf(mLastLocation.getLongitude()));
-//            }
-//        } catch (SecurityException e) {
-//            Toast.makeText(this, "Not working... no location available", Toast.LENGTH_SHORT).show();
-//        }
-        //crashes if null
-        //double lat = Double.parseDouble(mLatitudeText);
-        //double lng = Double.parseDouble(mLongitudeText);
-
-//        LatLng latAndLng = new LatLng(44.851518, -123.236810);
-//
-//        CameraUpdate updateCam = CameraUpdateFactory.newLatLngZoom(latAndLng, 14.1f);
-//        mMap.animateCamera(updateCam);
-//
-//        mMap.addMarker(new MarkerOptions().position(latAndLng).title("Location Services are working!"));
-//    }
-
-//    private Location bestLastKnownLocation(float minAccuracy, long minTime) {
-//        Location bestResult = null;
-//        float bestAccuracy = Float.MAX_VALUE;
-//        long bestTime = Long.MIN_VALUE;
-//
-//        // Set the location to null in case we catch the exception
-//        Location mCurrentLocation = null;
-//        // Get the best most recent location currently available
-//        try {
-//            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-//        } catch (SecurityException e) {
-//            System.out.println("Oops...");
-//        }
-//
-//        if (bestLocation != null && mCurrentLocation != null) {
-//            float accuracy = mCurrentLocation.getAccuracy();
-//            long time = mCurrentLocation.getTime();
-//
-//            if (accuracy < bestAccuracy) {
-//                bestResult = mCurrentLocation;
-//                bestAccuracy = accuracy;
-//                bestTime = time;
-//            }
-//        }
-//
-//        // Return best reading or null
-//        if (bestAccuracy > minAccuracy || bestTime < minTime) {
-//            return null;
-//        } else {
-//            return bestResult;
-//        }
-//    }
-//
-//    private boolean servicesAvailable() {
-//        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-//
-//        if (ConnectionResult.SUCCESS == resultCode) {
-//            return true;
-//        } else {
-//            GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0).show();
-//            return false;
-//        }
-//    }
 
     /**
      * Manipulates the map once available.
@@ -459,14 +362,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                             .position(location)
             );
+
+            data.close();
         }
 
+        String locateMe = "44.864763, -123.014778";
+
         //marker to add
-        data.addMarker(new PinPointObj("this point is near my house", "44.864763, -123.014778"));
-        //data.addMarker(new PinPointObj("I will add this in class!", "44.564763, -122.814778"));
+        //data.addMarker(new PinPointObj("this point is near my house", locateMe));
+        //data.addMarker(new PinPointObj("I will add this as a test!", "44.694763, -122.914778"));
 
         //close the data source
-        data.close();
+        //data.close();
 
         /************END DATABASE ACCESS************/
         /*******************************************/
@@ -474,20 +381,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /*************DELETE DATA POINT*************/
         /*******************************************/
 
-//        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            //upon clicking the text bubble of any given point, the marker will be removed from the map
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                //actually removes the marker from the map
-//                marker.remove();
-//                //query to remove the marker from the database as well
-//                //we need to remove the two fields associated with it, which are text and position
-//                data.deleteMarker(new PinPointObj(marker.getTitle(), marker.getPosition().latitude
-//                        + " " + marker.getPosition().longitude));
-//
-//                data.close();
-//            }
-//        });
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            //upon clicking the text bubble of any given point, the marker will be removed from the map
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+
+                try {
+                    //open access to the data source
+                    data.open();
+                } catch (Exception er) {
+                    Log.i("oops", "This is an error with the database");
+                }
+
+                //actually removes the marker from the map
+                marker.remove();
+                //query to remove the marker from the database as well
+                //we need to remove the two fields associated with it, which are text and position
+
+                String s = marker.getPosition().latitude
+                        + " " + marker.getPosition().longitude;
+
+                //remove the marker from the database
+                data.deleteMarker(new PinPointObj(marker.getTitle(), marker.getPosition().latitude
+                        + ", " + marker.getPosition().longitude));
+
+                //close the data source
+                data.close();
+            }
+        });
 
         /**********END OF DELETION CONTEXT**********/
         /*******************************************/
