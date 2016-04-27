@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -125,12 +126,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             long currentTime = System.currentTimeMillis();
 
-            //we do not update anything if the last update was less than 2 seconds ago
-            if (Math.abs(currentTime - lastUpdate) > 2000) {
+            //we do not update anything if the last update was less than 0.75 seconds ago
+            if (Math.abs(currentTime - lastUpdate) > 750) {
 
                 SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
                 String currentDateTime = date.format(new Date());
                 lastUpdate = currentTime;
+
+                double fancyThings = Math.sqrt(x*x +  y*y + z*z);
 
                 /*if (Math.abs(last_x - x) > 10) {
                     mMap.addMarker(new MarkerOptions()
@@ -141,7 +144,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 //listen for movement along the y-axis
                 //the logic statement dictates the amount of movement which needs to occur for a response
-                if (Math.abs(last_y - y) > 10) {
+                //if (Math.abs(last_y - y) > 5) {
+
+                //listen for a significant amount of movement
+                if (Math.abs(fancyThings) > 15) {
 
                     //add a marker at the specified coordinates
                     //marker is null to start
@@ -165,7 +171,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.i(TAG, "Better than nothing");
                         }
                     } else {
-                        handleNewLocation(location);
+                        //validate the change in location and record it
+                        onLocationChanged(location);
+                        //may need to think of a different area in the code to process this location management
+                        //currently it records the data twice, which means it does it here
+                        //and also from the listener itself
                     }
 
 //                    mMap.addMarker(new MarkerOptions()
@@ -183,7 +193,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 last_x = x;
                 last_y = y;
-                //last_z = z; //MAY NEED THIS LATER
+                last_z = z;
             }
         }
     }
@@ -245,7 +255,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //not a valid location
         if (location == null) {
 
-            //there has to be something better than this damn try/catch blocks
+            //there has to be something better than these try/catch blocks
             try {
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             } catch (SecurityException e) {
@@ -253,6 +263,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.i(TAG, "Better than nothing");
             }
         } else {
+            //if the location exists, a new marker will be added there
             //handleNewLocation(location);
         }
     }
@@ -296,16 +307,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double currentLongitude = location.getLongitude();
         //store the coordinates in a convenient object
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
+
+        /* A convenient way to round the coordinates to less decimal places
+        * Note that this is only for the sake of readability. We do not want
+        * to store these rounded values in the database
+        * */
+                /* DecimalFormat dflat = new DecimalFormat("#.###");
+        currentLatitude = Double.valueOf(dflat.format(currentLatitude));
+        DecimalFormat dflon = new DecimalFormat("#.###");
+        currentLongitude = Double.valueOf(dflon.format(currentLongitude));
+        * */
+
+        //get the current date and time
+        SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+        String currentDateTime = date.format(new Date());
         //define a marker with the coordinates and helpful text
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                .title("Current location is " + Double.toString(currentLatitude) + ", " + Double.toString(currentLongitude));
+                .title("Location: " + Double.toString(currentLatitude) + ", "
+                        + Double.toString(currentLongitude) + "; Time: " + currentDateTime);
 
         //add a marker to the map
         mMap.addMarker(options);
-        //move to that location on the map
 
+        //move to that location on the map
         //this moves to the current point on the map... uncomment this during a sprint!
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
     }
