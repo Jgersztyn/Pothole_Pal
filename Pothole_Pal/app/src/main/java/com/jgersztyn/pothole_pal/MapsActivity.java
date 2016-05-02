@@ -3,17 +3,22 @@ package com.jgersztyn.pothole_pal;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.IntentSender;
+import android.graphics.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
@@ -35,6 +40,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -108,8 +114,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //we want HIGH accuracy, since the locations of potholes should be precise
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(8000)        //8 second interval
-                .setFastestInterval(1000); //1 second interval
+                .setInterval(1000)          //1 second interval
+                .setFastestInterval(100);   //0.1 second interval
     }
 
     /*
@@ -124,16 +130,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             float y = event.values[1];
             float z = event.values[2];
 
-            long currentTime = System.currentTimeMillis();
+            //take the three points and...
+            double vectorProduct = Math.sqrt(x * x + y * y + z * z);
 
-            //we do not update anything if the last update was less than 0.75 seconds ago
-            if (Math.abs(currentTime - lastUpdate) > 750) {
-
-                SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
-                String currentDateTime = date.format(new Date());
-                lastUpdate = currentTime;
-
-                double fancyThings = Math.sqrt(x*x +  y*y + z*z);
+            //SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+            //String currentDateTime = date.format(new Date());
 
                 /*if (Math.abs(last_x - x) > 10) {
                     mMap.addMarker(new MarkerOptions()
@@ -142,23 +143,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .title("The x axis moved..." + currentDateTime));
                 }*/
 
-                //listen for movement along the y-axis
-                //the logic statement dictates the amount of movement which needs to occur for a response
-                //if (Math.abs(last_y - y) > 5) {
+            //listen for movement along the y-axis
+            //the logic statement dictates the amount of movement which needs to occur for a response
+            //if (Math.abs(last_y - y) > 5) {
 
-                //listen for a significant amount of movement
-                if (Math.abs(fancyThings) > 15) {
+            //listen for a significant amount of movement
+            if (Math.abs(vectorProduct) > 12) {
 
-                    //add a marker at the specified coordinates
-                    //marker is null to start
-                    Location location = null;
+                //add a marker at the specified coordinates
+                //marker is null to start
+                Location location = null;
 
-                    //register the last known location of this device
-                    try {
-                        location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                    } catch (SecurityException e) {
-                        Log.i(TAG, "Not able to get location");
-                    }
+                //register the last known location of this device
+                try {
+                    location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                } catch (SecurityException e) {
+                    Log.i(TAG, "Not able to get location");
+                }
+
+                //gets the current time at this very moment
+                long currentTime = System.currentTimeMillis();
+
+                //we do not attempt to add a point if the last update was less than x (5) seconds ago
+                if (Math.abs(currentTime - lastUpdate) > (5 * 1000)) {
 
                     //not a valid location
                     if (location == null) {
@@ -178,11 +185,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         //and also from the listener itself
                     }
 
+                    //the last moment in time a point was added
+                    //update this when a new point is added
+                    lastUpdate = currentTime;
+                }
+
 //                    mMap.addMarker(new MarkerOptions()
 //                            .position(new LatLng(44.842354, -123.2354))
 //                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
 //                            .title("The y axis moved on... " + currentDateTime));
-                }
+            }
 
                 /*if (Math.abs(last_z - z) > 10) {
                     mMap.addMarker(new MarkerOptions()
@@ -191,10 +203,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .title("The z axis moved..." + currentDateTime));
                 }*/
 
-                last_x = x;
-                last_y = y;
-                last_z = z;
+            //last_x = x;
+            //last_y = y;
+            //last_z = z;
+        }
+    }
+
+    /*
+    Implements the functionality of the search bar
+     */
+    public void onSearch(View view) {
+
+        try {
+            EditText location_tf = (EditText) findViewById(R.id.TFaddress);
+            String location = location_tf.getText().toString();
+
+            List<Address> addressList = null;
+
+            if (location != null || !location.equals("")) {
+                //8:40 into video https://www.youtube.com/watch?v=dr0zEmuDuIk
+
+                Geocoder geocoder = new Geocoder(this);
+                try {
+                    addressList = geocoder.getFromLocationName(location, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Address address = addressList.get(0);
+                LatLng latNlng = new LatLng(address.getLatitude(), address.getLongitude());
+                //add marker here, if we want!
+
+                //move to location
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latNlng, 15.0f));
             }
+        }
+        catch(Exception e) {
+            Toast.makeText(this, "No location found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -324,16 +369,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //define a marker with the coordinates and helpful text
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 .title("Location: " + Double.toString(currentLatitude) + ", "
                         + Double.toString(currentLongitude) + "; Time: " + currentDateTime);
 
-        //add a marker to the map
+        //add a marker to the map; does not add to database
         mMap.addMarker(options);
 
+
+
+        //DATABASE OPTIONS
+
+        //allow access to the database
+        data.open();
+        //convert lat and lng to strings
+        String lattttt = Double.toString(location.getLatitude());
+        String loooong = Double.toString(location.getLongitude());
+        //add a marker to the map and store it inside of the database
+        data.addMarker(new PinPointObj("Location: " + Double.toString(currentLatitude) + ", "
+                + Double.toString(currentLongitude) + "; Time: " + currentDateTime, lattttt + ", " + loooong));
+        //close the data source
+        data.close();
         //move to that location on the map
         //this moves to the current point on the map... uncomment this during a sprint!
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),
+                location.getLongitude()), 18.0f));
     }
 
     /**
@@ -394,9 +454,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         String locateMe = "44.864763, -123.014778";
 
+        //data.open();
+
         //marker to add
         //data.addMarker(new PinPointObj("this point is near my house", locateMe));
-        //data.addMarker(new PinPointObj("I will add this as a test!", "44.694763, -122.914778"));
+        //data.addMarker(new PinPointObj("I will add this as a test!", "44.794763, -122.994778"));
 
         //close the data source
         //data.close();
