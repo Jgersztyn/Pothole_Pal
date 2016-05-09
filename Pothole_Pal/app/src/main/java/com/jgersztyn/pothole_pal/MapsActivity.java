@@ -1,36 +1,30 @@
 package com.jgersztyn.pothole_pal;
 
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.IntentSender;
-import android.graphics.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,12 +35,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -147,8 +138,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //the logic statement dictates the amount of movement which needs to occur for a response
             //if (Math.abs(last_y - y) > 5) {
 
-            //listen for a significant amount of movement
-            if (Math.abs(vectorProduct) > 12) {
+            //listen for a significant amount of movement; a higher number means less sensitivity
+            if (Math.abs(vectorProduct) > 14) {
 
                 //add a marker at the specified coordinates
                 //marker is null to start
@@ -164,8 +155,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //gets the current time at this very moment
                 long currentTime = System.currentTimeMillis();
 
-                //we do not attempt to add a point if the last update was less than x (5) seconds ago
-                if (Math.abs(currentTime - lastUpdate) > (5 * 1000)) {
+                //we do not attempt to add a point if the last update was less than x (7) seconds ago
+                if (Math.abs(currentTime - lastUpdate) > (7 * 1000)) {
 
                     //not a valid location
                     if (location == null) {
@@ -210,6 +201,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /*
+needs to be here, I guess.
+ */
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    /*
     Implements the functionality of the search bar
      */
     public void onSearch(View view) {
@@ -218,10 +216,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             EditText location_tf = (EditText) findViewById(R.id.TFaddress);
             String location = location_tf.getText().toString();
 
+            //Toast.makeText(this, "You typed " + location, Toast.LENGTH_SHORT).show();
+
             List<Address> addressList = null;
 
             if (location != null || !location.equals("")) {
                 //8:40 into video https://www.youtube.com/watch?v=dr0zEmuDuIk
+
+                Toast.makeText(this, "You typed " + location, Toast.LENGTH_SHORT).show();
 
                 Geocoder geocoder = new Geocoder(this);
                 try {
@@ -241,13 +243,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         catch(Exception e) {
             Toast.makeText(this, "No location found", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    /*
-    needs to be here, I guess.
-     */
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     /*
@@ -413,6 +408,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //LatLng monmouthOR = new LatLng(44.8528, -123.2394);
         // Add a marker in Monmouth
         //mMap.addMarker(new MarkerOptions().position(monmouthOR).title("Western Oregon University"));
+
+        /**CREATE LISTENER TO ADD DATA POINT MANUALLY**/
+        /**********************************************/
+
+//        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+//
+//            public void onMapLongClick(final LatLng latlng) {
+//                LayoutInflater layout = LayoutInflater.from(context);
+//                final View v = layout.inflate(R.layout.alert_layout, null);
+//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//
+//                builder.setView(v);
+//                builder.setCancelable(false);
+//
+//                builder.setPositiveButton("Add Marker", new DialogInterface.OnClickListener() {
+//
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        EditText title = (EditText) v.findViewById(R.id.ettitle);
+//
+//                        mMap.addMarker(new MarkerOptions()
+//                                        .position(latlng)
+//                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+//                                        .title(title.getText().toString())
+//                        );
+//                    }
+//                });
+//
+//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//
+//                AlertDialog alert = builder.create();
+//                alert.show();
+//            }
+//        });
+
+        /**END LISTENER WHICH ADDS DATA POINT MANUALLY**/
+        /***********************************************/
 
         /**************DATABASE ACCESS**************/
         /*******************************************/
