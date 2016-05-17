@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -223,7 +224,8 @@ needs to be here, I guess.
             if (location != null || !location.equals("")) {
                 //8:40 into video https://www.youtube.com/watch?v=dr0zEmuDuIk
 
-                Toast.makeText(this, "You typed " + location, Toast.LENGTH_SHORT).show();
+                //display the location the user typed
+                //Toast.makeText(this, "You typed " + location, Toast.LENGTH_SHORT).show();
 
                 Geocoder geocoder = new Geocoder(this);
                 try {
@@ -386,7 +388,6 @@ needs to be here, I guess.
         //close the data source
         data.close();
         //move to that location on the map
-        //this moves to the current point on the map... uncomment this during a sprint!
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),
                 location.getLongitude()), 18.0f));
     }
@@ -404,50 +405,114 @@ needs to be here, I guess.
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Location a marker will be added
-        //LatLng monmouthOR = new LatLng(44.8528, -123.2394);
-        // Add a marker in Monmouth
-        //mMap.addMarker(new MarkerOptions().position(monmouthOR).title("Western Oregon University"));
-
         /**CREATE LISTENER TO ADD DATA POINT MANUALLY**/
         /**********************************************/
 
-//        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-//
-//            public void onMapLongClick(final LatLng latlng) {
-//                LayoutInflater layout = LayoutInflater.from(context);
-//                final View v = layout.inflate(R.layout.alert_layout, null);
-//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//
-//                builder.setView(v);
-//                builder.setCancelable(false);
-//
-//                builder.setPositiveButton("Add Marker", new DialogInterface.OnClickListener() {
-//
-//                    public void onClick(DialogInterface dialog, int which) {
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+            public void onMapLongClick(final LatLng latlng) {
+                LayoutInflater layout = LayoutInflater.from(context);
+                final View v = layout.inflate(R.layout.alert_layout, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                builder.setView(v);
+                builder.setCancelable(false);
+
+                builder.setPositiveButton("Add Marker", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //UNCOMMENT THIS CODE FOR A SPRINT
+
+//                        //get the text from the field inside of the window
 //                        EditText title = (EditText) v.findViewById(R.id.ettitle);
+//                        //variable to record the severity of this pothole
+//                        int scale = 0;
+//                        //get string from window and turn it into an integer value
+//                        EditText severity = (EditText) v.findViewById(R.id.etserverity);
+//                        try {
+//                            scale = Integer.parseInt(severity.getText().toString());
+//                        }
+//                        catch(IndexOutOfBoundsException e) {
+//                            Log.i("Bad value", "Try again with an int between 1 and 20");
+//                        }
 //
-//                        mMap.addMarker(new MarkerOptions()
-//                                        .position(latlng)
-//                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-//                                        .title(title.getText().toString())
-//                        );
-//                    }
-//                });
+//                        //mid severity of a bump
+//                        if(scale > 16 && scale <= 19)
+//                        {
+//                            mMap.addMarker(new MarkerOptions()
+//                                            .position(latlng)
+//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+//                                    .title(title.getText().toString())
 //
-//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
+//                            );                        }
+//                        //high severity of a bump
+//                        else if(scale > 19)
+//                        {
+//                            mMap.addMarker(new MarkerOptions()
+//                                            .position(latlng)
+//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+//                                    .title(title.getText().toString())
 //
-//                AlertDialog alert = builder.create();
-//                alert.show();
-//            }
-//        });
+//                            );                        }
+//                        //default (low) severity of a bump
+//                        else {
+//                            mMap.addMarker(new MarkerOptions()
+//                                            .position(latlng)
+//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+//                                    .title(title.getText().toString())
+//                            );
+//                        }
+
+                        //delete this block for a sprint
+                        mMap.addMarker(new MarkerOptions()
+                                        .position(latlng)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                                        .title(latlng.toString())
+                                //.title(title.getText().toString())
+                        );
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
 
         /**END LISTENER WHICH ADDS DATA POINT MANUALLY**/
         /***********************************************/
+
+
+        /***********************************************/
+        //listen for marker click and then zoom
+//        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//
+//             public boolean onMarkerClick(final Marker marker) {
+//
+//                 //get the location of this marker
+//                 LatLng location = marker.getPosition();
+//
+//                 //Build camera position
+//                 CameraPosition cameraPosition = new CameraPosition.Builder()
+//                         .target(location)
+//                         .zoom(18).build();
+//                 //zoom to this location on the map
+//                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//
+//                 //display the info window
+//                 marker.showInfoWindow();
+//
+//                 //returning false means the default action will occur and there is no zoom
+//                 return true;
+//             }
+//        });
+        /********************************************/
 
         /**************DATABASE ACCESS**************/
         /*******************************************/

@@ -6,13 +6,25 @@
     android:orientation="vertical"
     android:padding="10dp">
 
+    <!--uncomment this text and the two lines in the MapsActivity-->
+
     <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter title: " />
+        android:text="Enter title: "
+        android:layout_width="wrap_content" />
 
     <EditText
         android:id="@+id/ettitle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Severity: " />
+
+    <EditText
+        android:id="@+id/etserverity"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>
