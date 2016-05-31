@@ -35,14 +35,6 @@
         android:layout_height="match_parent"
         layout="@layout/activity_first_acivity">
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Let&apos;s Begin"
-            android:id="@+id/ButtonToMap"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -50,27 +42,44 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Welcome to Pothole Pal!"
             android:id="@+id/textView"
+            android:textSize="30dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="84dp" />
+            android:layout_marginTop="40dp" />
 
         <Button
-            android:layout_width="wrap_content"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Let's Begin"
+            android:textSize="30dp"
+            android:id="@+id/ButtonToMap"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="120dp"
+            android:layout_marginBottom="250dp"
+            android:minHeight="130dp" />
+
+        <Button
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Settings"
+            android:textSize="30dp"
             android:id="@+id/settingsButton"
-            android:layout_below="@+id/ButtonToMap"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp" />
+            android:layout_marginTop="250dp"
+            android:layout_marginBottom="380dp"
+            android:minHeight="130dp" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Login"
+            android:textSize="30dp"
             android:id="@+id/loginButton"
-            android:layout_above="@+id/ButtonToMap"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginTop="380dp"
+            android:minHeight="130dp"
+            android:layout_marginBottom="510dp" />
     </RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>

@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Pothole_Pal</string>
+    <string name="app_name">Pothole Pal</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">Pothole Tracker</string>
     <string name="title_activity_first_activity">Home</string>
     <string name="title_activity_settings">Settings</string>
 

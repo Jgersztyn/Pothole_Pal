@@ -3,6 +3,7 @@ package com.jgersztyn.pothole_pal;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,8 +15,14 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -36,14 +43,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener,
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap;
+
+    ActionBarDrawerToggle drawerToggle;
+    Toolbar toolbar;
+    DrawerLayout drawerLay;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -69,27 +81,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //used in handling connection errors with the GoogleApiClient
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
-//    //not likely needed again
-//    private static final long ONE_MIN = 1000 * 60;
-//    private static final long TWO_MIN = ONE_MIN * 2;
-//    private static final long FIVE_MIN = ONE_MIN * 5;
-//    private static final float MIN_ACCURACY = 25.0f;
-//    private static final float MIN_LAST_READ_ACCURACY = 500.0f;
-//    Location bestLocation;
-//    Location mLastLocation;
-//    boolean mRequestingLocationUpdates = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //setup for the accelerometer
+        //set up for the accelerometer
         sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener((SensorEventListener) listen, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
+        //set up the content and view of this activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        //set the toolbar in this activity
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        drawerLay = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setSupportActionBar(toolbar);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLay, toolbar, R.string.drawer_open,
+                R.string.drawer_close);
+
+        //obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -108,6 +119,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(1000)          //1 second interval
                 .setFastestInterval(100);   //0.1 second interval
+    }
+
+    //The following methods set up the toolbar in the map view
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_maps_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if(id == R.id.main_id) {
+            Intent openAboutActivityIntent = new Intent(this, FirstAcivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+        if(id == R.id.settings_id) {
+            Intent openAboutActivityIntent = new Intent(this, SettingsActivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+        if(id == R.id.login_id) {
+            Intent openAboutActivityIntent = new Intent(this, LoginActivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /*
@@ -222,16 +265,12 @@ needs to be here, I guess.
             List<Address> addressList = null;
 
             if (location != null || !location.equals("")) {
-                //8:40 into video https://www.youtube.com/watch?v=dr0zEmuDuIk
-
-                //display the location the user typed
-                //Toast.makeText(this, "You typed " + location, Toast.LENGTH_SHORT).show();
 
                 Geocoder geocoder = new Geocoder(this);
                 try {
                     addressList = geocoder.getFromLocationName(location, 1);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.i(TAG, "Location not found");
                 }
 
                 Address address = addressList.get(0);
@@ -241,8 +280,7 @@ needs to be here, I guess.
                 //move to location
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latNlng, 15.0f));
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             Toast.makeText(this, "No location found", Toast.LENGTH_SHORT).show();
         }
     }
@@ -354,11 +392,10 @@ needs to be here, I guess.
         * Note that this is only for the sake of readability. We do not want
         * to store these rounded values in the database
         * */
-                /* DecimalFormat dflat = new DecimalFormat("#.###");
-        currentLatitude = Double.valueOf(dflat.format(currentLatitude));
-        DecimalFormat dflon = new DecimalFormat("#.###");
-        currentLongitude = Double.valueOf(dflon.format(currentLongitude));
-        * */
+//        DecimalFormat dflat = new DecimalFormat("#.###");
+//        currentLatitude = Double.valueOf(dflat.format(currentLatitude));
+//        DecimalFormat dflon = new DecimalFormat("#.###");
+//        currentLongitude = Double.valueOf(dflon.format(currentLongitude));
 
         //get the current date and time
         SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
@@ -372,7 +409,6 @@ needs to be here, I guess.
 
         //add a marker to the map; does not add to database
         mMap.addMarker(options);
-
 
 
         //DATABASE OPTIONS
@@ -422,55 +458,67 @@ needs to be here, I guess.
 
                     public void onClick(DialogInterface dialog, int which) {
 
-                        //UNCOMMENT THIS CODE FOR A SPRINT
+                        //get the text from the field inside of the window
+                        EditText title = (EditText) v.findViewById(R.id.atitle);
 
-//                        //get the text from the field inside of the window
-//                        EditText title = (EditText) v.findViewById(R.id.ettitle);
+                        /******UNCOMMNENT TO ADD COLOR CODING******/
+
 //                        //variable to record the severity of this pothole
 //                        int scale = 0;
 //                        //get string from window and turn it into an integer value
-//                        EditText severity = (EditText) v.findViewById(R.id.etserverity);
+//                        EditText severity = (EditText) v.findViewById(R.id.aseverity);
 //                        try {
 //                            scale = Integer.parseInt(severity.getText().toString());
-//                        }
-//                        catch(IndexOutOfBoundsException e) {
+//                        } catch (IndexOutOfBoundsException e) {
 //                            Log.i("Bad value", "Try again with an int between 1 and 20");
 //                        }
 //
 //                        //mid severity of a bump
-//                        if(scale > 16 && scale <= 19)
-//                        {
+//                        if (scale > 16 && scale <= 19) {
 //                            mMap.addMarker(new MarkerOptions()
 //                                            .position(latlng)
 //                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-//                                    .title(title.getText().toString())
+//                                            .title(title.getText().toString())
 //
-//                            );                        }
+//                            );
+//                        }
 //                        //high severity of a bump
-//                        else if(scale > 19)
-//                        {
+//                        else if (scale > 19) {
 //                            mMap.addMarker(new MarkerOptions()
 //                                            .position(latlng)
 //                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-//                                    .title(title.getText().toString())
+//                                            .title(title.getText().toString())
 //
-//                            );                        }
-//                        //default (low) severity of a bump
-//                        else {
-//                            mMap.addMarker(new MarkerOptions()
-//                                            .position(latlng)
-//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-//                                    .title(title.getText().toString())
 //                            );
 //                        }
-
-                        //delete this block for a sprint
+                        //default (low) severity of a bump
+                        //else {     below code goes here      }
                         mMap.addMarker(new MarkerOptions()
                                         .position(latlng)
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                                        .title(latlng.toString())
-                                //.title(title.getText().toString())
+                                        .title(title.getText().toString())
+                                //.title(latlng.toString())
                         );
+
+
+                        //allow access to the database
+                        data.open();
+                        //convert lat and lng to strings
+                        String lat = Double.toString(latlng.latitude);
+                        String lng = Double.toString(latlng.longitude);
+
+                        //add a marker to the map and store it inside of the database
+
+// add the data and marker but with no text gotten from the menu
+//                        data.addMarker(new PinPointObj("Location: " + Double.toString(latlng.latitude) + ", "
+//                                + Double.toString(latlng.longitude) + "; Time: " +
+//                                new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z").format(new Date()), lat + ", " + lng));
+
+                        data.addMarker(new PinPointObj(title.getText().toString(), lat + ", " + lng));
+                        //close the data source
+                        data.close();
+                        //move to that location on the map
+                        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 12.0f));
                     }
                 });
 
@@ -488,30 +536,32 @@ needs to be here, I guess.
         /**END LISTENER WHICH ADDS DATA POINT MANUALLY**/
         /***********************************************/
 
-
         /***********************************************/
-        //listen for marker click and then zoom
-//        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//
-//             public boolean onMarkerClick(final Marker marker) {
-//
-//                 //get the location of this marker
-//                 LatLng location = marker.getPosition();
-//
-//                 //Build camera position
-//                 CameraPosition cameraPosition = new CameraPosition.Builder()
-//                         .target(location)
-//                         .zoom(18).build();
-//                 //zoom to this location on the map
-//                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//
-//                 //display the info window
-//                 marker.showInfoWindow();
-//
-//                 //returning false means the default action will occur and there is no zoom
-//                 return true;
-//             }
-//        });
+        /*****listen for marker click and then zoom*****/
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            public boolean onMarkerClick(final Marker marker) {
+
+                //get the location of this marker
+                LatLng location = marker.getPosition();
+
+                //Build camera position
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(location)
+                        .zoom(16).build();
+                //zoom to this location on the map
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                //display the info window
+                marker.showInfoWindow();
+
+                //returning false means the default action will occur and there is no zoom
+                return true;
+            }
+        });
+
+        /********************************************/
         /********************************************/
 
         /**************DATABASE ACCESS**************/
@@ -552,56 +602,88 @@ needs to be here, I guess.
             data.close();
         }
 
-        String locateMe = "44.864763, -123.014778";
-
+        //String locateMe = "44.864763, -123.014778";
         //data.open();
-
         //marker to add
         //data.addMarker(new PinPointObj("this point is near my house", locateMe));
         //data.addMarker(new PinPointObj("I will add this as a test!", "44.794763, -122.994778"));
-
         //close the data source
         //data.close();
 
         /************END DATABASE ACCESS************/
         /*******************************************/
 
-        /*************DELETE DATA POINT*************/
+        /*******DELETE AND MODIFY DATA POINT********/
         /*******************************************/
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            //upon clicking the text bubble of any given point, the marker will be removed from the map
-            @Override
-            public void onInfoWindowClick(Marker marker) {
 
-                try {
-                    //open access to the data source
-                    data.open();
-                } catch (Exception er) {
-                    Log.i("oops", "This is an error with the database");
-                }
+            //upon clicking on the window for a point, a series of options will be presented to the user
+            public void onInfoWindowClick(final Marker marker) {
 
-                //actually removes the marker from the map
-                marker.remove();
-                //query to remove the marker from the database as well
-                //we need to remove the two fields associated with it, which are text and position
+                LayoutInflater layout = LayoutInflater.from(context);
+                final View v = layout.inflate(R.layout.edit_layout, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-                String s = marker.getPosition().latitude
-                        + " " + marker.getPosition().longitude;
+                builder.setView(v);
+                builder.setCancelable(false);
 
-                //remove the marker from the database
-                data.deleteMarker(new PinPointObj(marker.getTitle(), marker.getPosition().latitude
-                        + ", " + marker.getPosition().longitude));
+                builder.setNeutralButton("Confirm Edit", new DialogInterface.OnClickListener() {
 
-                //close the data source
-                data.close();
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //get the text from the field inside of the window
+                        EditText title = (EditText) v.findViewById(R.id.edttitle);
+                        //update the text of the title
+                        marker.setTitle(title.getText().toString());
+
+                        //this does not update in the database...
+                    }
+                });
+
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //here we attempt to delete a point from the map
+                        try {
+                            //open access to the data source
+                            data.open();
+                        } catch (Exception er) {
+                            Log.i("oops", "This is an error with the database");
+                        }
+
+                        //actually removes the marker from the map
+                        marker.remove();
+                        //query to remove the marker from the database as well
+                        //we need to remove the two fields associated with it, which are text and position
+
+                        String s = marker.getPosition().latitude
+                                + " " + marker.getPosition().longitude;
+
+                        //remove the marker from the database
+                        data.deleteMarker(new PinPointObj(marker.getTitle(), marker.getPosition().latitude
+                                + ", " + marker.getPosition().longitude));
+                        //close the data source
+                        data.close();
+                    }
+                });
+
+                builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 
         /**********END OF DELETION CONTEXT**********/
         /*******************************************/
 
-        // Zoom to this point on the map
+        //zoom to this point on the map at start
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.8608, -123.1394), 8.9f));
     }
 }

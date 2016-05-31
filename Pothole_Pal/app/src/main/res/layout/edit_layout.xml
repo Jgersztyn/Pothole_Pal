@@ -6,15 +6,13 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <!--uncomment this text and the two lines in the MapsActivity-->
-
     <TextView
         android:layout_height="wrap_content"
         android:text="Enter title: "
         android:layout_width="wrap_content" />
 
     <EditText
-        android:id="@+id/atitle"
+        android:id="@+id/edttitle"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -24,7 +22,17 @@
         android:text="Severity: " />
 
     <EditText
-        android:id="@+id/aseverity"
+        android:id="@+id/edtseverity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blue, Yellow, Orange: " />
+
+    <EditText
+        android:id="@+id/edtcolor"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />-->
 </LinearLayout>

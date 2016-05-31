@@ -1,5 +1,6 @@
 package com.jgersztyn.pothole_pal;
 
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -35,8 +36,10 @@ public class FirstAcivity extends AppCompatActivity {
         drawerLay = (DrawerLayout) findViewById(R.id.drawer_layout);
         setSupportActionBar(toolbar);
 
-        //set up our button for interaction
+        //set up our button which will navigate to the map
         Button toMapButton = (Button)findViewById(R.id.ButtonToMap);
+        //set the color of this button
+        //toMapButton.setBackgroundColor(Color.argb(255, 22, 11, 44));
         //describe the action event to take place with this button
         toMapButton.setOnClickListener(
                 new Button.OnClickListener()
