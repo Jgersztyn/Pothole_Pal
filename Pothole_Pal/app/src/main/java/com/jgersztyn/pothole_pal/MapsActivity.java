@@ -53,10 +53,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
 
-    ActionBarDrawerToggle drawerToggle;
-    Toolbar toolbar;
-    DrawerLayout drawerLay;
-
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private float last_x, last_y, last_z;
@@ -93,13 +89,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        //set the toolbar in this activity
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        drawerLay = (DrawerLayout) findViewById(R.id.drawer_layout);
-        setSupportActionBar(toolbar);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLay, toolbar, R.string.drawer_open,
-                R.string.drawer_close);
-
         //obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -119,38 +108,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(1000)          //1 second interval
                 .setFastestInterval(100);   //0.1 second interval
-    }
-
-    //The following methods set up the toolbar in the map view
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_maps_activity, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if(id == R.id.main_id) {
-            Intent openAboutActivityIntent = new Intent(this, FirstAcivity.class);
-            startActivity(openAboutActivityIntent);
-        }
-        if(id == R.id.settings_id) {
-            Intent openAboutActivityIntent = new Intent(this, SettingsActivity.class);
-            startActivity(openAboutActivityIntent);
-        }
-        if(id == R.id.login_id) {
-            Intent openAboutActivityIntent = new Intent(this, LoginActivity.class);
-            startActivity(openAboutActivityIntent);
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /*
@@ -461,38 +418,6 @@ needs to be here, I guess.
                         //get the text from the field inside of the window
                         EditText title = (EditText) v.findViewById(R.id.atitle);
 
-                        /******UNCOMMNENT TO ADD COLOR CODING******/
-
-//                        //variable to record the severity of this pothole
-//                        int scale = 0;
-//                        //get string from window and turn it into an integer value
-//                        EditText severity = (EditText) v.findViewById(R.id.aseverity);
-//                        try {
-//                            scale = Integer.parseInt(severity.getText().toString());
-//                        } catch (IndexOutOfBoundsException e) {
-//                            Log.i("Bad value", "Try again with an int between 1 and 20");
-//                        }
-//
-//                        //mid severity of a bump
-//                        if (scale > 16 && scale <= 19) {
-//                            mMap.addMarker(new MarkerOptions()
-//                                            .position(latlng)
-//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-//                                            .title(title.getText().toString())
-//
-//                            );
-//                        }
-//                        //high severity of a bump
-//                        else if (scale > 19) {
-//                            mMap.addMarker(new MarkerOptions()
-//                                            .position(latlng)
-//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-//                                            .title(title.getText().toString())
-//
-//                            );
-//                        }
-                        //default (low) severity of a bump
-                        //else {     below code goes here      }
                         mMap.addMarker(new MarkerOptions()
                                         .position(latlng)
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
@@ -508,11 +433,6 @@ needs to be here, I guess.
                         String lng = Double.toString(latlng.longitude);
 
                         //add a marker to the map and store it inside of the database
-
-// add the data and marker but with no text gotten from the menu
-//                        data.addMarker(new PinPointObj("Location: " + Double.toString(latlng.latitude) + ", "
-//                                + Double.toString(latlng.longitude) + "; Time: " +
-//                                new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z").format(new Date()), lat + ", " + lng));
 
                         data.addMarker(new PinPointObj(title.getText().toString(), lat + ", " + lng));
                         //close the data source
@@ -535,34 +455,6 @@ needs to be here, I guess.
 
         /**END LISTENER WHICH ADDS DATA POINT MANUALLY**/
         /***********************************************/
-
-        /***********************************************/
-        /*****listen for marker click and then zoom*****/
-
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-
-            public boolean onMarkerClick(final Marker marker) {
-
-                //get the location of this marker
-                LatLng location = marker.getPosition();
-
-                //Build camera position
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(location)
-                        .zoom(16).build();
-                //zoom to this location on the map
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                //display the info window
-                marker.showInfoWindow();
-
-                //returning false means the default action will occur and there is no zoom
-                return true;
-            }
-        });
-
-        /********************************************/
-        /********************************************/
 
         /**************DATABASE ACCESS**************/
         /*******************************************/
