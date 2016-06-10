@@ -12,6 +12,7 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
@@ -52,6 +54,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap;
+
+    ActionBarDrawerToggle drawerToggle;
+    Toolbar toolbar;
+    DrawerLayout drawerLay;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -89,6 +95,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        //set the toolbar in this activity
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        drawerLay = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setSupportActionBar(toolbar);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLay, toolbar, R.string.drawer_open,
+                R.string.drawer_close);
+
         //obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -124,20 +137,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             //take the three points and...
             double vectorProduct = Math.sqrt(x * x + y * y + z * z);
-
-            //SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
-            //String currentDateTime = date.format(new Date());
-
-                /*if (Math.abs(last_x - x) > 10) {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(44.842354, -123.2304))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                            .title("The x axis moved..." + currentDateTime));
-                }*/
-
-            //listen for movement along the y-axis
-            //the logic statement dictates the amount of movement which needs to occur for a response
-            //if (Math.abs(last_y - y) > 5) {
 
             //listen for a significant amount of movement; a higher number means less sensitivity
             if (Math.abs(vectorProduct) > 14) {
@@ -181,29 +180,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //update this when a new point is added
                     lastUpdate = currentTime;
                 }
-
-//                    mMap.addMarker(new MarkerOptions()
-//                            .position(new LatLng(44.842354, -123.2354))
-//                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-//                            .title("The y axis moved on... " + currentDateTime));
             }
-
-                /*if (Math.abs(last_z - z) > 10) {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(44.842354, -123.2434))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                            .title("The z axis moved..." + currentDateTime));
-                }*/
-
-            //last_x = x;
-            //last_y = y;
-            //last_z = z;
         }
     }
 
     /*
-needs to be here, I guess.
- */
+    needs to be here, I guess.
+    */
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
@@ -422,7 +405,6 @@ needs to be here, I guess.
                                         .position(latlng)
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                                         .title(title.getText().toString())
-                                //.title(latlng.toString())
                         );
 
 
@@ -520,16 +502,18 @@ needs to be here, I guess.
                 builder.setView(v);
                 builder.setCancelable(false);
 
+                //get the text from the field inside of the window
+                final EditText title = (EditText) v.findViewById(R.id.edttitle);
+
+                //fill text box with the currently stored value within the marker
+                title.setText(marker.getTitle(), TextView.BufferType.EDITABLE);
+
                 builder.setNeutralButton("Confirm Edit", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
 
-                        //get the text from the field inside of the window
-                        EditText title = (EditText) v.findViewById(R.id.edttitle);
-                        //update the text of the title
+                        //update the text of the marker's title
                         marker.setTitle(title.getText().toString());
-
-                        //this does not update in the database...
                     }
                 });
 
