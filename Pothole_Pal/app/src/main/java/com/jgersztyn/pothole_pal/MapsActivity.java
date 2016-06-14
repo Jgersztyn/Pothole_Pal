@@ -123,6 +123,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setFastestInterval(100);   //0.1 second interval
     }
 
+    //The following methods set up the toolbar in the map view
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_maps_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if(id == R.id.main_id) {
+            Intent openAboutActivityIntent = new Intent(this, FirstAcivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+        if(id == R.id.settings_id) {
+            Intent openAboutActivityIntent = new Intent(this, SettingsActivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+        if(id == R.id.login_id) {
+            Intent openAboutActivityIntent = new Intent(this, LoginActivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     /*
     listener for changes in movement
     */
@@ -328,15 +360,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //store the coordinates in a convenient object
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
-        /* A convenient way to round the coordinates to less decimal places
-        * Note that this is only for the sake of readability. We do not want
-        * to store these rounded values in the database
-        * */
-//        DecimalFormat dflat = new DecimalFormat("#.###");
-//        currentLatitude = Double.valueOf(dflat.format(currentLatitude));
-//        DecimalFormat dflon = new DecimalFormat("#.###");
-//        currentLongitude = Double.valueOf(dflon.format(currentLongitude));
-
         //get the current date and time
         SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
         String currentDateTime = date.format(new Date());
@@ -438,6 +461,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         /**END LISTENER WHICH ADDS DATA POINT MANUALLY**/
         /***********************************************/
 
+        /***********************************************/
+        /*****listen for marker click and then zoom*****/
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            public boolean onMarkerClick(final Marker marker) {
+
+                //get the location of this marker
+                LatLng location = marker.getPosition();
+
+                //Build camera position
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(location)
+                        .zoom(16).build();
+                //zoom to this location on the map
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                //display the info window
+                marker.showInfoWindow();
+
+                //returning false means the default action will occur and there is no zoom
+                return true;
+            }
+        });
+
+        /********************************************/
+        /********************************************/
+
         /**************DATABASE ACCESS**************/
         /*******************************************/
 
@@ -475,14 +526,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             data.close();
         }
-
-        //String locateMe = "44.864763, -123.014778";
-        //data.open();
-        //marker to add
-        //data.addMarker(new PinPointObj("this point is near my house", locateMe));
-        //data.addMarker(new PinPointObj("I will add this as a test!", "44.794763, -122.994778"));
-        //close the data source
-        //data.close();
 
         /************END DATABASE ACCESS************/
         /*******************************************/
