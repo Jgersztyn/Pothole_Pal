@@ -170,6 +170,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //take the three points and...
             double vectorProduct = Math.sqrt(x * x + y * y + z * z);
 
+            //SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+            //String currentDateTime = date.format(new Date());
+
+                /*if (Math.abs(last_x - x) > 10) {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(44.842354, -123.2304))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                            .title("The x axis moved..." + currentDateTime));
+                }*/
+
+            //listen for movement along the y-axis
+            //the logic statement dictates the amount of movement which needs to occur for a response
+            //if (Math.abs(last_y - y) > 5) {
+
             //listen for a significant amount of movement; a higher number means less sensitivity
             if (Math.abs(vectorProduct) > 14) {
 
@@ -212,7 +226,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //update this when a new point is added
                     lastUpdate = currentTime;
                 }
+
+//                    mMap.addMarker(new MarkerOptions()
+//                            .position(new LatLng(44.842354, -123.2354))
+//                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+//                            .title("The y axis moved on... " + currentDateTime));
             }
+
+                /*if (Math.abs(last_z - z) > 10) {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(44.842354, -123.2434))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                            .title("The z axis moved..." + currentDateTime));
+                }*/
+
+            //last_x = x;
+            //last_y = y;
+            //last_z = z;
         }
     }
 
@@ -360,6 +390,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //store the coordinates in a convenient object
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
+        /* A convenient way to round the coordinates to less decimal places
+        * Note that this is only for the sake of readability. We do not want
+        * to store these rounded values in the database
+        * */
+        DecimalFormat dflat = new DecimalFormat("#.###");
+        currentLatitude = Double.valueOf(dflat.format(currentLatitude));
+        DecimalFormat dflon = new DecimalFormat("#.###");
+        currentLongitude = Double.valueOf(dflon.format(currentLongitude));
+
         //get the current date and time
         SimpleDateFormat date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
         String currentDateTime = date.format(new Date());
@@ -424,10 +463,43 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         //get the text from the field inside of the window
                         EditText title = (EditText) v.findViewById(R.id.atitle);
 
+                        /******UNCOMMNENT TO ADD COLOR CODING******/
+
+//                        //variable to record the severity of this pothole
+//                        int scale = 0;
+//                        //get string from window and turn it into an integer value
+//                        EditText severity = (EditText) v.findViewById(R.id.aseverity);
+//                        try {
+//                            scale = Integer.parseInt(severity.getText().toString());
+//                        } catch (IndexOutOfBoundsException e) {
+//                            Log.i("Bad value", "Try again with an int between 1 and 20");
+//                        }
+//
+//                        //mid severity of a bump
+//                        if (scale > 16 && scale <= 19) {
+//                            mMap.addMarker(new MarkerOptions()
+//                                            .position(latlng)
+//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+//                                            .title(title.getText().toString())
+//
+//                            );
+//                        }
+//                        //high severity of a bump
+//                        else if (scale > 19) {
+//                            mMap.addMarker(new MarkerOptions()
+//                                            .position(latlng)
+//                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+//                                            .title(title.getText().toString())
+//
+//                            );
+//                        }
+                        //default (low) severity of a bump
+                        //else {     below code goes here      }
                         mMap.addMarker(new MarkerOptions()
                                         .position(latlng)
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                                         .title(title.getText().toString())
+                                //.title(latlng.toString())
                         );
 
 
@@ -438,6 +510,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         String lng = Double.toString(latlng.longitude);
 
                         //add a marker to the map and store it inside of the database
+
+// add the data and marker but with no text gotten from the menu
+//                        data.addMarker(new PinPointObj("Location: " + Double.toString(latlng.latitude) + ", "
+//                                + Double.toString(latlng.longitude) + "; Time: " +
+//                                new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z").format(new Date()), lat + ", " + lng));
 
                         data.addMarker(new PinPointObj(title.getText().toString(), lat + ", " + lng));
                         //close the data source
@@ -527,6 +604,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             data.close();
         }
 
+        //String locateMe = "44.864763, -123.014778";
+        //data.open();
+        //marker to add
+        //data.addMarker(new PinPointObj("this point is near my house", locateMe));
+        //data.addMarker(new PinPointObj("I will add this as a test!", "44.794763, -122.994778"));
+        //close the data source
+        //data.close();
+
         /************END DATABASE ACCESS************/
         /*******************************************/
 
@@ -557,6 +642,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         //update the text of the marker's title
                         marker.setTitle(title.getText().toString());
+
+                        //this does not update in the database...
+
+                        //
+
+                        //FIX THAT
                     }
                 });
 

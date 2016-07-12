@@ -2,10 +2,15 @@ package com.jgersztyn.pothole_pal;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +26,10 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
+    Toolbar toolbar;
+    ActionBarDrawerToggle drawerToggle;
+    DrawerLayout drawerLay;
+
     @Bind(R.id.input_email) EditText _emailText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
@@ -31,6 +40,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        //set the toolbar in this activity
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        drawerLay = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setSupportActionBar(toolbar);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLay, toolbar, R.string.drawer_open,
+                R.string.drawer_close);
 
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
@@ -134,5 +150,36 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    //The following methods set up the toolbar in the map view
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_login_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if(id == R.id.main_id) {
+            Intent openAboutActivityIntent = new Intent(this, FirstAcivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+        if(id == R.id.settings_id) {
+            Intent openAboutActivityIntent = new Intent(this, SettingsActivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+        if(id == R.id.map_id) {
+            Intent openAboutActivityIntent = new Intent(this, MapsActivity.class);
+            startActivity(openAboutActivityIntent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

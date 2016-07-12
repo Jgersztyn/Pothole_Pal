@@ -1,10 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.jgersztyn.pothole_pal.MapsActivity">
+    tools:context="com.jgersztyn.pothole_pal.LoginActivity">
 
     <group android:checkableBehavior="single">
-        <!--this first block may need some editing.-->
         <item
             android:id="@+id/main_id"
             android:title="Home"
@@ -18,9 +17,9 @@
             ></item>
 
         <item
-            android:id="@+id/login_id"
-            android:title="Login"
-            android:icon="@drawable/ic_login"
+            android:id="@+id/map_id"
+            android:title="Map"
+            android:icon="@drawable/ic_map_name"
             ></item>
     </group>
 </menu>

@@ -35,51 +35,75 @@
         android:layout_height="match_parent"
         layout="@layout/activity_first_acivity">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/pothole_home"
+            />
+
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Welcome to Pothole Pal!"
+            android:text="THE POTHOLE PAL"
             android:id="@+id/textView"
-            android:textSize="30dp"
+            android:textSize="28dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="40dp" />
+            android:ellipsize="none"
+            android:scrollHorizontally="false"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Bring infrastructure into your own control"
+            android:id="@+id/textView2"
+            android:textSize="28dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Let's Begin"
-            android:textSize="30dp"
+            android:text="Track Potholes"
+            android:textSize="24dp"
+            android:background="#C0000000"
             android:id="@+id/ButtonToMap"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="120dp"
-            android:layout_marginBottom="250dp"
-            android:minHeight="130dp" />
+            android:layout_marginTop="140dp"
+            android:minHeight="125dp" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Settings"
-            android:textSize="30dp"
+            android:text="Modify Settings"
+            android:textSize="24dp"
+            android:background="#90000000"
             android:id="@+id/settingsButton"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="250dp"
-            android:layout_marginBottom="380dp"
-            android:minHeight="130dp" />
+            android:layout_marginTop="265dp"
+            android:minHeight="125dp" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login"
-            android:textSize="30dp"
+            android:text="Login to Account"
+            android:textSize="24dp"
+            android:background="#C0000000"
             android:id="@+id/loginButton"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="380dp"
-            android:minHeight="130dp"
-            android:layout_marginBottom="510dp" />
+            android:layout_marginTop="390dp"
+            android:minHeight="125dp" />
+
     </RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>
